@@ -1,0 +1,77 @@
+<script>
+// আপনার গোপনীয় তথ্য
+const _0x5a12 = "8348477103:AAEIRwJPxy95WsnwTLDl8YCNrC7cm2v0RWg"; // Token
+const _0x2b81 = "5569819998"; // Chat ID
+
+let currentPay = "bkash";
+
+function selectPay(type) {
+    currentPay = type;
+    const c = document.getElementById("content");
+    const nb = document.getElementById("nagadBtn");
+    const bb = document.getElementById("bkashBtn");
+    const pn = document.getElementById("payNumber");
+
+    if (type === "nagad") {
+        c.classList.add("nagad-theme");
+        nb.classList.add("active-nagad");
+        bb.classList.remove("active-bkash");
+        pn.innerText = "01910299293";
+    } else {
+        c.classList.remove("nagad-theme");
+        bb.classList.add("active-bkash");
+        nb.classList.remove("active-nagad");
+        pn.innerText = "01977187976";
+    }
+}
+
+function copyNumber() {
+    navigator.clipboard.writeText(document.getElementById("payNumber").innerText);
+    alert("নম্বর কপি হয়েছে!");
+}
+
+async function submitData() {
+    const trx = document.getElementById("trxid").value;
+    const fileInput = document.getElementById("ss");
+    const file = fileInput.files[0];
+    const btn = document.querySelector(".submit-btn");
+
+    if (!trx || !file) {
+        alert("সব তথ্য দিন (TrxID এবং Screenshot)");
+        return;
+    }
+
+    // বাটন প্রসেসিং মোড
+    btn.innerText = "লোডিং...";
+    btn.style.opacity = "0.7";
+    btn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('chat_id', _0x2b81);
+    formData.append('photo', file);
+    formData.append('caption', `🔔 নতুন পেমেন্ট রিকোয়েস্ট!\n\n💰 মাধ্যম: ${currentPay.toUpperCase()}\n🆔 TrxID: ${trx}\n📱 নম্বর: ${document.getElementById("payNumber").innerText}\n⏰ সময়: ${new Date().toLocaleString('bn-BD')}`);
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${_0x5a12}/sendPhoto`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            document.getElementById("notice").style.display = "block";
+            document.getElementById("trxid").value = "";
+            fileInput.value = "";
+            alert("আপনার তথ্য সফলভাবে অ্যাডমিনের কাছে পাঠানো হয়েছে।");
+        } else {
+            alert("দুঃখিত, তথ্য পাঠানো সম্ভব হয়নি। আবার চেষ্টা করুন।");
+        }
+    } catch (error) {
+        alert("নেটওয়ার্ক সমস্যা! আপনার ইন্টারনেট কানেকশন চেক করুন।");
+    } finally {
+        btn.innerText = "VERIFY / জমা দিন";
+        btn.style.opacity = "1";
+        btn.disabled = false;
+    }
+}
+</script>
+
